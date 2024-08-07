@@ -1,5 +1,6 @@
 package doma.sidim.model
 
+import doma.sidim.util.OrderStatus
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.sql.Table
@@ -10,7 +11,7 @@ import java.time.LocalDate
 data class Order(
     val id: Long? = null,
     @Contextual val orderDate: LocalDate,
-    val orderStatus: String,
+    val orderStatus: OrderStatus,
     val orderCost: Long,
     @Contextual val deliveryDate: LocalDate,
     val deliveryAddress: String,
@@ -21,7 +22,7 @@ data class Order(
 object Orders : Table("orders") {
     val id = long("id").autoIncrement()
     val orderDate = datetime("order_date")
-    val orderStatus = varchar("order_status", 50)
+    val orderStatus = integer("order_status")
     val orderCost = long("order_cost")
     val deliveryDate = datetime("delivery_date")
     val deliveryAddress = varchar("delivery_address", 500)
