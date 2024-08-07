@@ -16,9 +16,12 @@ fun Application.configureRouting() {
             call.respondText(text = "500: $cause", status = HttpStatusCode.InternalServerError)
         }
     }
+
     routing {
-        get("/") {
-            call.respondText("Hello World!")
+        route("/api") {
+            route("/v1") {
+                //userRoutes(userService)
+            }
         }
     }
 }
