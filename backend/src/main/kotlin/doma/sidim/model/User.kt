@@ -13,7 +13,7 @@ data class User(
 )
 
 object Users : Table("users") {
-    val id = long("user_id").autoIncrement()
+    val id = long("id").autoIncrement()
     val email = varchar("email", 500)
     val firstname = varchar("first_name", 500)
     val lastname = varchar("last_name", 500)

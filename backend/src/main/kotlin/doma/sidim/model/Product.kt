@@ -1,7 +1,9 @@
 package doma.sidim.model
 
+import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.sql.Table
 
+@Serializable
 data class Product(
     val id: Long? = null,
     val title: String,
