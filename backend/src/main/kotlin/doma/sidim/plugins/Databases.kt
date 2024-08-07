@@ -1,6 +1,7 @@
 package doma.sidim.plugins
 
 import doma.sidim.model.Users
+import doma.sidim.util.PreparedData
 import io.ktor.server.application.*
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
@@ -16,6 +17,6 @@ fun Application.configureDatabases() {
 
     transaction(database) {
         SchemaUtils.create(Users)
-        //PreparedData.insertInitialData()
+        PreparedData.insertInitialData()
     }
 }
