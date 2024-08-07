@@ -5,15 +5,15 @@ import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.javatime.datetime
-import java.time.LocalDate
+import java.time.LocalDateTime
 
 @Serializable
 data class Order(
     val id: Long? = null,
-    @Contextual val orderDate: LocalDate,
+    @Contextual val orderDate: LocalDateTime,
     val orderStatus: OrderStatus,
     val orderCost: Long,
-    @Contextual val deliveryDate: LocalDate,
+    @Contextual val deliveryDate: LocalDateTime,
     val deliveryAddress: String,
     val userId: Long,
     val products: List<Product>
