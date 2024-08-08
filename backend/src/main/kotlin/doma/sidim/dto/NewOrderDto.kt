@@ -6,5 +6,5 @@ import kotlinx.serialization.Serializable
 data class NewOrderDto(
     val orderCost: Long,
     val deliveryAddress: String,
-    val productIds: List<Long>,
+    val productIdsQuantities: Map<Long, Int>,
 )

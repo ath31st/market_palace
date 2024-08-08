@@ -34,4 +34,5 @@ object Orders : Table("orders") {
 object OrderProducts : Table("order_products") {
     val orderId = long("order_id").references(Orders.id)
     val productId = long("product_id").references(Products.id)
+    val quantity = integer("quantity")
 }

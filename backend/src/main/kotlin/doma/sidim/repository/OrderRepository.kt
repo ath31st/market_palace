@@ -23,11 +23,10 @@ class OrderRepository(private val productRepository: ProductRepository) {
                 it[Orders.userId] = userId
             }[Orders.id]
 
-            item.productIds.forEach { productId ->
-                OrderProducts.insert {
-                    it[orderId] = id
-                    it[OrderProducts.productId] = productId
-                }
+            OrderProducts.batchInsert(item.productIdsQuantities.entries) { (productId, quantity) ->
+                this[OrderProducts.orderId] = id
+                this[OrderProducts.productId] = productId
+                this[OrderProducts.quantity] = quantity
             }
         }
         return id
