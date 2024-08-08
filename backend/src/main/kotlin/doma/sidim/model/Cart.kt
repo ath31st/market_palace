@@ -7,7 +7,7 @@ import org.jetbrains.exposed.sql.Table
 data class Cart(
     val id: Long? = null,
     val userId: Long,
-    val products: List<Product> = emptyList(),
+    val products: Map<Product, Int> = emptyMap(),
 )
 
 object Carts : Table("carts") {
