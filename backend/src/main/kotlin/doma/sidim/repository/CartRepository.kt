@@ -48,6 +48,21 @@ class CartRepository(private val productRepository: ProductRepository) {
         }
     }
 
+    fun updateCart(cartId: Long, updatedProducts: Map<Long, Int>): Boolean {
+        return transaction {
+            val deleteCount = CartProducts.deleteWhere { CartProducts.cartId eq cartId }
+
+            val insertCount =
+                CartProducts.batchInsert(updatedProducts.entries) { (productId, quantity) ->
+                    this[CartProducts.cartId] = cartId
+                    this[CartProducts.productId] = productId
+                    this[CartProducts.quantity] = quantity
+                }.count()
+
+            deleteCount > 0 || insertCount > 0
+        }
+    }
+
     private fun ResultRow.toCart(): Cart {
         return Cart(
             id = this[Carts.id],
