@@ -1,5 +1,6 @@
 package doma.sidim.repository
 
+import doma.sidim.dto.Page
 import doma.sidim.model.Product
 import doma.sidim.model.Products
 import org.jetbrains.exposed.sql.*
@@ -45,6 +46,22 @@ class ProductRepository {
     fun delete(id: Long): Boolean {
         return transaction {
             Products.deleteWhere { Products.id eq id } > 0
+        }
+    }
+
+    fun getPaged(offset: Int, limit: Int): Page<Product> {
+        return transaction {
+            val totalItems = Products.selectAll().count()
+            val items = Products.selectAll()
+                .limit(limit, offset = offset.toLong())
+                .map { it.toProduct() }
+            val totalPages = (totalItems / limit).toInt() + if (totalItems % limit != 0L) 1 else 0
+            Page(
+                items = items,
+                totalItems = totalItems,
+                totalPages = totalPages,
+                currentPage = offset / limit + 1
+            )
         }
     }
 
