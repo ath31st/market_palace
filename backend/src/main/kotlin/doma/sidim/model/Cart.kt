@@ -20,4 +20,5 @@ object Carts : Table("carts") {
 object CartProducts : Table("cart_products") {
     val cartId = long("cart_id").references(Carts.id)
     val productId = long("product_id").references(Products.id)
+    val quantity = integer("quantity")
 }

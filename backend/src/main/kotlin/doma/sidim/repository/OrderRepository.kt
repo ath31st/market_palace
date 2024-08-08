@@ -41,9 +41,8 @@ class OrderRepository(private val productRepository: ProductRepository) {
 
             orderRow?.let { order ->
                 val products = OrderProducts.select { OrderProducts.orderId eq id }
-                    .mapNotNull {
-                        productRepository.read(it[OrderProducts.productId])
-                    }
+                    .associate { it[OrderProducts.productId] to it[OrderProducts.quantity] }
+                    .mapKeys { (productId, _) -> productRepository.read(productId)!! }
 
                 order.copy(products = products)
             }
@@ -72,7 +71,7 @@ class OrderRepository(private val productRepository: ProductRepository) {
             orderCost = this[Orders.orderCost],
             deliveryDate = this[Orders.deliveryDate],
             deliveryAddress = this[Orders.deliveryAddress],
-            products = emptyList(),
+            products = emptyMap(),
             userId = this[Orders.userId],
         )
     }

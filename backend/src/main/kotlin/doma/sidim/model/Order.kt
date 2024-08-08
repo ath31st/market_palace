@@ -16,7 +16,7 @@ data class Order(
     @Contextual val deliveryDate: LocalDateTime,
     val deliveryAddress: String,
     val userId: Long,
-    val products: List<Product>
+    val products: Map<Product, Int>
 )
 
 object Orders : Table("orders") {
