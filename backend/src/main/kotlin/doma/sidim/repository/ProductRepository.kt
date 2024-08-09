@@ -49,13 +49,35 @@ class ProductRepository {
         }
     }
 
-    fun getPaged(offset: Int, limit: Int): Page<Product> {
+    fun getPaged(
+        offset: Int,
+        limit: Int,
+        search: String? = null,
+        sortBy: String? = null,
+        sortOrder: SortOrder = SortOrder.ASC
+    ): Page<Product> {
         return transaction {
-            val totalItems = Products.selectAll().count()
-            val items = Products.selectAll()
+            var query = Products.selectAll()
+
+            search?.let {
+                query = query.andWhere { Products.title like "%$it%" }
+            }
+
+            sortBy?.let {
+                query = when (it) {
+                    "title" -> query.orderBy(Products.title to sortOrder)
+                    "price" -> query.orderBy(Products.price to sortOrder)
+                    else -> query
+                }
+            }
+
+            val totalItems = query.count()
+            val items = query
                 .limit(limit, offset = offset.toLong())
                 .map { it.toProduct() }
+
             val totalPages = (totalItems / limit).toInt() + if (totalItems % limit != 0L) 1 else 0
+
             Page(
                 items = items,
                 totalItems = totalItems,
