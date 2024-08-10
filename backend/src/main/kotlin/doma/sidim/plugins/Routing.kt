@@ -1,6 +1,8 @@
 package doma.sidim.plugins
 
+import doma.sidim.route.productRoutes
 import doma.sidim.route.userRoutes
+import doma.sidim.service.ProductService
 import doma.sidim.service.UserService
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -10,7 +12,7 @@ import io.ktor.server.resources.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
-fun Application.configureRouting(userService: UserService) {
+fun Application.configureRouting(userService: UserService, productService: ProductService) {
     install(AutoHeadResponse)
     install(Resources)
     install(StatusPages) {
@@ -23,6 +25,7 @@ fun Application.configureRouting(userService: UserService) {
         route("/api") {
             route("/v1") {
                 userRoutes(userService)
+                productRoutes(productService)
             }
         }
     }

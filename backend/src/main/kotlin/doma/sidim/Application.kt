@@ -1,7 +1,9 @@
 package doma.sidim
 
 import doma.sidim.plugins.*
+import doma.sidim.repository.ProductRepository
 import doma.sidim.repository.UserRepository
+import doma.sidim.service.ProductService
 import doma.sidim.service.UserService
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
@@ -22,11 +24,12 @@ fun main() {
 
 fun Application.module() {
     val userService = UserService(UserRepository())
+    val productService = ProductService(ProductRepository())
 
     configureSecurity(userService)
     configureHTTP()
     configureMonitoring()
     configureSerialization()
     configureDatabases()
-    configureRouting(userService)
+    configureRouting(userService, productService)
 }
