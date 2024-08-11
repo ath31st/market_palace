@@ -49,4 +49,35 @@ class CartService(private val cartRepository: CartRepository) {
         return false
     }
 
+    fun updateProductInCart(cartId: Long, productId: Long, quantity: Int): Boolean {
+        val cart = cartRepository.read(cartId) ?: return false
+        val cartProducts = cart.products.entries
+            .associate { it.key.id!! to it.value }
+            .toMutableMap()
+
+        val currentQuantity = cartProducts[productId] ?: 0
+
+        val newQuantity = currentQuantity + quantity
+
+        when {
+            newQuantity > 0 -> {
+                cartProducts[productId] = newQuantity
+            }
+
+            newQuantity <= 0 -> {
+                cartProducts.remove(productId)
+            }
+        }
+
+        return cartRepository.updateCart(cartId, cartProducts)
+    }
+
+
+    fun existsCartByUserId(userId: Long): Boolean {
+        return cartRepository.existsCartByUserId(userId)
+    }
+
+    fun deleteCartByUserId(userId: Long): Boolean {
+        return cartRepository.deleteByUserId(userId)
+    }
 }
