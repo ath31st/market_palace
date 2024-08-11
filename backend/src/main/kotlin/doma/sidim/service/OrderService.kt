@@ -8,12 +8,17 @@ import java.time.LocalDateTime
 
 class OrderService(private val orderRepository: OrderRepository) {
 
-    fun createOrder(newOrder: NewOrderDto, userId: Long, deliveryDate: LocalDateTime): Long {
+    fun createOrder(newOrder: NewOrderDto, userId: Long): Long {
+        val deliveryDate = LocalDateTime.now()
         return orderRepository.create(newOrder, userId, deliveryDate)
     }
 
     fun getOrder(id: Long): Order? {
         return orderRepository.read(id)
+    }
+
+    fun getOrdersByUserId(userId: Long): List<Order> {
+        return orderRepository.findOrdersByUserId(userId)
     }
 
     fun deleteOrder(id: Long): Boolean {

@@ -49,6 +49,23 @@ class OrderRepository(private val productRepository: ProductRepository) {
         }
     }
 
+    fun findOrdersByUserId(userId: Long): List<Order> {
+        return transaction {
+            val orderRows = Orders.select { Orders.userId eq userId }
+                .mapNotNull {
+                    it.toOrder()
+                }
+
+            orderRows.map { order ->
+                val products = OrderProducts.select { OrderProducts.orderId eq order.id!! }
+                    .associate { it[OrderProducts.productId] to it[OrderProducts.quantity] }
+                    .mapKeys { (productId, _) -> productRepository.read(productId)!! }
+
+                order.copy(products = products)
+            }
+        }
+    }
+
     fun delete(id: Long): Boolean {
         return transaction {
             Orders.deleteWhere { Orders.id eq id } > 0
