@@ -63,6 +63,16 @@ class CartRepository(private val productRepository: ProductRepository) {
         }
     }
 
+    fun deleteByUserId(userId: Long): Boolean {
+        return transaction {
+            Carts.deleteWhere { Carts.userId eq userId } > 0
+        }
+    }
+
+    fun existsCartByUserId(userId: Long): Boolean {
+        return transaction { Carts.select { Carts.userId eq userId }.count() > 0 }
+    }
+
     private fun ResultRow.toCart(): Cart {
         return Cart(
             id = this[Carts.id],
