@@ -1,7 +1,11 @@
 package doma.sidim.plugins
 
+import doma.sidim.route.cartRoutes
+import doma.sidim.route.orderRoutes
 import doma.sidim.route.productRoutes
 import doma.sidim.route.userRoutes
+import doma.sidim.service.CartService
+import doma.sidim.service.OrderService
 import doma.sidim.service.ProductService
 import doma.sidim.service.UserService
 import io.ktor.http.*
@@ -12,7 +16,12 @@ import io.ktor.server.resources.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
-fun Application.configureRouting(userService: UserService, productService: ProductService) {
+fun Application.configureRouting(
+    userService: UserService,
+    productService: ProductService,
+    cartService: CartService,
+    orderService: OrderService
+) {
     install(AutoHeadResponse)
     install(Resources)
     install(StatusPages) {
@@ -26,6 +35,8 @@ fun Application.configureRouting(userService: UserService, productService: Produ
             route("/v1") {
                 userRoutes(userService)
                 productRoutes(productService)
+                cartRoutes(cartService)
+                orderRoutes(orderService)
             }
         }
     }
