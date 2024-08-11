@@ -13,46 +13,48 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
 fun Route.cartRoutes(cartService: CartService) {
+
     authenticate("auth-jwt") {
 
-    }
+        get("/cart") {
+            val principal = call.principal<JWTPrincipal>()!!
+            val authUserId = principal.userId()
 
-    get("/cart") {
-        val principal = call.principal<JWTPrincipal>()!!
-        val authUserId = principal.userId()
-
-        cartService.getCart(authUserId)?.let {
-            call.respond(HttpStatusCode.OK, it)
-        } ?: run {
-            call.respond(HttpStatusCode.NotFound)
-        }
-    }
-
-    post("/cart") {
-        val cartReq = call.receive<CartReq>()
-        val principal = call.principal<JWTPrincipal>()!!
-        val authUserId = principal.userId()
-
-        cartService.existsCartByUserId(authUserId).let {
-            if (it) {
-                cartService.deleteCartByUserId(authUserId)
+            cartService.getCart(authUserId)?.let {
+                call.respond(HttpStatusCode.OK, it)
+            } ?: run {
+                call.respond(HttpStatusCode.NotFound)
             }
         }
-        cartService.createCart(cartReq, authUserId)
-        call.respond(HttpStatusCode.Created)
-    }
 
-    put("/cart") {
-        val cartChange = call.receive<CartChange>()
-        val principal = call.principal<JWTPrincipal>()!!
-        val authUserId = principal.userId()
+        post("/cart") {
+            val cartReq = call.receive<CartReq>()
+            val principal = call.principal<JWTPrincipal>()!!
+            val authUserId = principal.userId()
 
-        cartService.updateProductInCart(authUserId, cartChange.productId, cartChange.quantity).let {
-            if (it) {
-                call.respond(HttpStatusCode.OK)
-            } else {
-                call.respond(HttpStatusCode.BadRequest)
+            cartService.existsCartByUserId(authUserId).let {
+                if (it) {
+                    cartService.deleteCartByUserId(authUserId)
+                }
             }
+            cartService.createCart(cartReq, authUserId)
+            call.respond(HttpStatusCode.Created)
         }
+
+        put("/cart") {
+            val cartChange = call.receive<CartChange>()
+            val principal = call.principal<JWTPrincipal>()!!
+            val authUserId = principal.userId()
+
+            cartService.updateProductInCart(authUserId, cartChange.productId, cartChange.quantity)
+                .let {
+                    if (it) {
+                        call.respond(HttpStatusCode.OK)
+                    } else {
+                        call.respond(HttpStatusCode.BadRequest)
+                    }
+                }
+        }
+
     }
 }

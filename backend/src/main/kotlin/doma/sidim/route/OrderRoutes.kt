@@ -15,27 +15,27 @@ fun Route.orderRoutes(orderService: OrderService) {
 
     authenticate("auth-jwt") {
 
-    }
+        get("/my-orders") {
+            val principal = call.principal<JWTPrincipal>()!!
+            val authUserId = principal.userId()
 
-    get("/my-orders") {
-        val principal = call.principal<JWTPrincipal>()!!
-        val authUserId = principal.userId()
-
-        val orders = orderService.getOrdersByUserId(authUserId)
-        if (orders.isNotEmpty()) {
-            call.respond(HttpStatusCode.OK, orders)
-        } else {
-            call.respond(HttpStatusCode.BadRequest)
+            val orders = orderService.getOrdersByUserId(authUserId)
+            if (orders.isNotEmpty()) {
+                call.respond(HttpStatusCode.OK, orders)
+            } else {
+                call.respond(HttpStatusCode.BadRequest)
+            }
         }
-    }
 
-    post("/my-orders") {
-        val principal = call.principal<JWTPrincipal>()!!
-        val authUserId = principal.userId()
+        post("/my-orders") {
+            val principal = call.principal<JWTPrincipal>()!!
+            val authUserId = principal.userId()
 
-        val dto = call.receive<NewOrderDto>()
-        orderService.createOrder(dto, authUserId)
+            val dto = call.receive<NewOrderDto>()
+            orderService.createOrder(dto, authUserId)
 
-        call.respond(HttpStatusCode.Created)
+            call.respond(HttpStatusCode.Created)
+        }
+
     }
 }
