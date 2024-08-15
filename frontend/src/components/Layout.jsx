@@ -9,6 +9,11 @@ const Container = styled.main`
     min-height: calc(100vh - 100px);
     display: flex;
     flex-direction: column;
+    background-image: url('/background/common_bg.jpg');
+    background-size: cover;
+    background-position: center;
+    width: 1200px;
+    margin: 0 auto;
 `
 
 const Layout = () => {
