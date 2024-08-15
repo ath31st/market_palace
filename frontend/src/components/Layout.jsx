@@ -6,13 +6,12 @@ import styled from 'styled-components'
 
 const Container = styled.main`
     padding: 20px;
-    min-height: calc(100vh - 100px);
+    min-height: calc(100vh - 95px);
     display: flex;
     flex-direction: column;
     background-image: url('/background/common_bg.jpg');
     background-size: cover;
     background-position: center;
-    width: 1200px;
     margin: 0 auto;
 `
 
