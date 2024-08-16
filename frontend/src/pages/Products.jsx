@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import useAuth from '../hooks/useAuth'
 import axios from 'axios'
+import SearchAndSort from '../components/container/SearchAndSort'
+import ProductList from '../components/ProductList'
 
 const Products = () => {
   const isAuthenticated = useAuth().isAuthenticated
@@ -32,9 +34,10 @@ const Products = () => {
 
   return (
     <div className="products">
+      <SearchAndSort/>
       {loading ? <p>Loading...</p> : error ? <p>Error: {error.message}</p> :
-        <ul>{products.map(
-          product => <li key={product.id}>{product.title}</li>)}</ul>}
+        <ProductList products={products}/>
+      }
     </div>
   )
 }
