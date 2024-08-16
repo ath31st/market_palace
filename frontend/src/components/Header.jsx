@@ -1,38 +1,46 @@
 import React from 'react'
 import styled from 'styled-components'
-import { useSelector } from 'react-redux'
+import { FaShoppingCart, FaUserAlt, FaDoorOpen } from 'react-icons/fa'
+import useAuth from '../hooks/useAuth'
 
 const HeaderContainer = styled.header`
-    background-color: #333;
-    color: white;
-    padding: 10px 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding: 20px 20px;
+    background-color: #f8f8f8;
+    border-bottom: 1px solid #ddd;
 `
 
-const NavLinks = styled.div`
+const Logo = styled.div`
+    font-size: 34px;
+    font-weight: bold;
+    color: #32CD32;
+`
+
+const Icons = styled.div`
     display: flex;
-    gap: 15px;
-`
+    align-items: center;
 
-const Text = styled.span`
-    color: #ccc;
+    & > * {
+        margin-left: 20px;
+        cursor: pointer;
+        font-size: 25px;
+        color: #555;
+    }
 `
 
 const Header = () => {
-  const user = useSelector((state) => state.auth.user)
+  const isAuthenticated = useAuth().isAuthenticated
 
   return (
     <HeaderContainer>
-      <h1>Market palace Project</h1>
-      <NavLinks>
-        {user !== null ? (
-            <Text>{user.email}</Text>
-        ) : (
-          <Text>You are not authorized</Text>
-        )}
-      </NavLinks>
+      <Logo>Market palace</Logo>
+      <Icons>
+        <FaUserAlt/>
+        <FaShoppingCart/>
+        {isAuthenticated && <FaDoorOpen/>}
+      </Icons>
     </HeaderContainer>
   )
 }
