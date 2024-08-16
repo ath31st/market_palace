@@ -25,6 +25,7 @@ const ProductList = ({ products }) => {
         {products.map(product => (
           <Product
             key={product.id}
+            id={product.id}
             image={product.imageLink}
             title={product.title}
             price={product.price}
