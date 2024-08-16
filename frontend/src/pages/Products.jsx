@@ -15,14 +15,14 @@ const Products = () => {
   const [error, setError] = useState(null)
 
   useEffect(() => {
-    const fetchProducts = async (page = 1) => {
+    const fetchProducts = async (page = 1, size = 10) => {
       const axiosInstance = axios.create({
         baseURL: apiUrl,
       })
 
       try {
         const response = await axiosInstance.get('/api/v1/products', {
-          params: { page },
+          params: { page, size },
         })
         console.log(response.data)
         setProducts(response.data.items)
