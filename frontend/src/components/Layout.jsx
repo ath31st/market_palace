@@ -6,7 +6,7 @@ import styled from 'styled-components'
 
 const Container = styled.main`
     padding: 20px;
-    min-height: calc(100vh - 95px);
+    min-height: calc(100vh - 140px);
     display: flex;
     flex-direction: column;
     background-image: url('/background/common_bg.jpg');
