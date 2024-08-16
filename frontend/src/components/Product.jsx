@@ -1,5 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
+import AddToCartButton from './button/AddToCartButton'
+import { useNavigate } from 'react-router-dom'
 
 const ProductContainer = styled.div`
     border: 1px solid #ddd;
@@ -15,12 +17,14 @@ const ProductImage = styled.img`
     width: 180px;
     height: 130px;
     border-radius: 5px;
+    cursor: pointer;
 `
 
 const ProductTitle = styled.h3`
     font-size: 18px;
     color: #333;
     margin: 10px 0;
+    cursor: pointer;
 `
 
 const ProductPrice = styled.p`
@@ -28,27 +32,17 @@ const ProductPrice = styled.p`
     color: #888;
 `
 
-const AddToCartButton = styled.button`
-    width: 100%;
-    padding: 5px;
-    background-color: #32CD32;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    font-size: 16px;
-    cursor: pointer;
-    margin-top: 10px;
+const Product = ({ id, image, title, price }) => {
+  const navigate = useNavigate()
 
-    &:hover {
-        background-color: #006400;
-    }
-`
+  const handleProductClick = () => {
+    navigate(`/products/${id}`)
+  }
 
-const Product = ({ image, title, price }) => {
   return (
     <ProductContainer>
-      <ProductImage src={image} alt={title}/>
-      <ProductTitle>{title}</ProductTitle>
+      <ProductImage onClick={handleProductClick} src={image} alt={title}/>
+      <ProductTitle onClick={handleProductClick}>{title}</ProductTitle>
       <ProductPrice>${price}/lb</ProductPrice>
       <AddToCartButton>Add to cart</AddToCartButton>
     </ProductContainer>
