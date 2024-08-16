@@ -12,8 +12,8 @@ const ProductContainer = styled.div`
 `
 
 const ProductImage = styled.img`
-    width: 100%;
-    height: auto;
+    width: 180px;
+    height: 130px;
     border-radius: 5px;
 `
 
@@ -30,12 +30,12 @@ const ProductPrice = styled.p`
 
 const AddToCartButton = styled.button`
     width: 100%;
-    padding: 10px;
+    padding: 5px;
     background-color: #32CD32;
     color: white;
     border: none;
     border-radius: 5px;
-    font-size: 18px;
+    font-size: 16px;
     cursor: pointer;
     margin-top: 10px;
 
@@ -49,7 +49,7 @@ const Product = ({ image, title, price }) => {
     <ProductContainer>
       <ProductImage src={image} alt={title}/>
       <ProductTitle>{title}</ProductTitle>
-      <ProductPrice>{price}</ProductPrice>
+      <ProductPrice>${price}/lb</ProductPrice>
       <AddToCartButton>Add to cart</AddToCartButton>
     </ProductContainer>
   )
