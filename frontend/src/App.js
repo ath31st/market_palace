@@ -5,6 +5,7 @@ import Signup from './pages/Signup'
 import NotFoundPage from './pages/NotFoundPage'
 import Login from './pages/Login'
 import PrivateRoute from './components/PrivateRoute'
+import ProductPage from './pages/ProductPage'
 
 function App () {
   return (
@@ -12,6 +13,7 @@ function App () {
       <Routes>
         <Route path="/" element={<Layout/>}>
           <Route index element={<Products/>}/>
+          <Route path="/products/:id" element={<ProductPage/>} />
           {/*<Route path="/cart"*/}
           {/*       element={<PrivateRoute element={<Cart/>}/>}/>*/}
           {/*<Route path="/my-orders"*/}
