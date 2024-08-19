@@ -6,6 +6,7 @@ import NotFoundPage from './pages/NotFoundPage'
 import Login from './pages/Login'
 import PrivateRoute from './components/PrivateRoute'
 import ProductPage from './pages/ProductPage'
+import CartPage from './pages/CartPage'
 
 function App () {
   return (
@@ -14,8 +15,8 @@ function App () {
         <Route path="/" element={<Layout/>}>
           <Route index element={<Products/>}/>
           <Route path="/products/:id" element={<ProductPage/>} />
-          {/*<Route path="/cart"*/}
-          {/*       element={<PrivateRoute element={<Cart/>}/>}/>*/}
+          <Route path="/cart"
+                 element={<PrivateRoute element={<CartPage/>}/>}/>
           {/*<Route path="/my-orders"*/}
           {/*       element={<PrivateRoute element={<MyOrders/>}/>}/>*/}
           <Route path="*" element={<NotFoundPage/>}/>
