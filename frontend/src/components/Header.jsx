@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import { FaShoppingCart, FaUserAlt, FaDoorOpen } from 'react-icons/fa'
+import { FaShoppingCart, FaDoorOpen, FaListAlt, } from 'react-icons/fa'
 import useAuth from '../hooks/useAuth'
 
 const HeaderContainer = styled.header`
@@ -37,7 +37,7 @@ const Header = () => {
     <HeaderContainer>
       <Logo>Market palace</Logo>
       <Icons>
-        <FaUserAlt/>
+        <FaListAlt/>
         <FaShoppingCart/>
         {isAuthenticated && <FaDoorOpen/>}
       </Icons>
