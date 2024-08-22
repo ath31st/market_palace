@@ -1,7 +1,15 @@
 import React from 'react'
 import styled from 'styled-components'
-import { FaShoppingCart, FaDoorOpen, FaListAlt, } from 'react-icons/fa'
+import {
+  FaShoppingCart,
+  FaDoorOpen,
+  FaListAlt,
+  FaSignInAlt,
+} from 'react-icons/fa'
 import useAuth from '../hooks/useAuth'
+import { useNavigate } from 'react-router-dom'
+import { useDispatch } from 'react-redux'
+import { performLogout } from '../redux/authSlice'
 
 const HeaderContainer = styled.header`
     display: flex;
@@ -32,14 +40,22 @@ const Icons = styled.div`
 
 const Header = () => {
   const isAuthenticated = useAuth().isAuthenticated
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
 
   return (
     <HeaderContainer>
       <Logo>Market palace</Logo>
       <Icons>
-        <FaListAlt/>
-        <FaShoppingCart/>
-        {isAuthenticated && <FaDoorOpen/>}
+        {!isAuthenticated ? (
+          <FaSignInAlt onClick={() => navigate('/login')}/>
+        ) : (
+          <>
+            <FaListAlt onClick={() => navigate('/my-orders')}/>
+            <FaShoppingCart onClick={() => navigate('/cart')}/>
+            <FaDoorOpen onClick={() => dispatch(performLogout())}/>
+          </>
+        )}
       </Icons>
     </HeaderContainer>
   )
