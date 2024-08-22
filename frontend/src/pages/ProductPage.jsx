@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
 import axios from '../config/axiosConfig'
 import styled from 'styled-components'
 import AddToCartButton from '../components/button/AddToCartButton'
+import QuantityControl from '../components/button/QuantityControl'
+import { fetchCart, updateCart, addToCart } from '../redux/cartSlice'
 
 const ProductContainer = styled.div`
     display: flex;
@@ -73,6 +76,9 @@ const ProductPage = () => {
   const [product, setProduct] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const dispatch = useDispatch()
+  const { items: cartItems, status: cartStatus } = useSelector(
+    state => state.cart)
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -87,10 +93,35 @@ const ProductPage = () => {
     }
 
     fetchProduct()
-  }, [id])
+    dispatch(fetchCart())
+  }, [id, dispatch])
+
+  const handleAddToCart = () => {
+    dispatch(addToCart({ productId: product.id, quantity: 1 }))
+  }
+
+  const handleIncrement = () => {
+    const existingItem = cartItems.find(item => item.productId === product.id)
+    if (existingItem) {
+      dispatch(updateCart(
+        { productId: product.id, quantity: existingItem.quantity + 1 }))
+    }
+  }
+
+  const handleDecrement = () => {
+    const existingItem = cartItems.find(item => item.productId === product.id)
+    if (existingItem && existingItem.quantity > 1) {
+      dispatch(updateCart(
+        { productId: product.id, quantity: existingItem.quantity - 1 }))
+    }
+  }
 
   if (loading) return <p>Loading...</p>
   if (error) return <p>Error: {error.message}</p>
+
+  const isProductInCart = cartItems.some(item => item.productId === product.id)
+  const currentQuantity = isProductInCart ? cartItems.find(
+    item => item.productId === product.id).quantity : 0
 
   return (
     <ProductContainer>
@@ -105,7 +136,16 @@ const ProductPage = () => {
         <VendorInfo>Vendor: {product.vendorInfo}</VendorInfo>
         <PriceAndButton>
           <ProductPrice>${product.price}/lb</ProductPrice>
-          <AddToCartButton>Add to cart</AddToCartButton>
+          {isProductInCart ? (
+            <QuantityControl
+              quantity={currentQuantity}
+              onIncrement={handleIncrement}
+              onDecrement={handleDecrement}
+            />
+          ) : (
+            <AddToCartButton onClick={handleAddToCart}>Add to
+              cart</AddToCartButton>
+          )}
         </PriceAndButton>
       </InfoContainer>
     </ProductContainer>
