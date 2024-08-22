@@ -24,6 +24,11 @@ const Logo = styled.div`
     font-size: 34px;
     font-weight: bold;
     color: #32CD32;
+    cursor: pointer;
+    
+    &:hover {
+        color: #006400;
+    }
 `
 
 const Icons = styled.div`
@@ -45,7 +50,7 @@ const Header = () => {
 
   return (
     <HeaderContainer>
-      <Logo>Market palace</Logo>
+      <Logo onClick={() => navigate('/')}>Market palace</Logo>
       <Icons>
         {!isAuthenticated ? (
           <FaSignInAlt onClick={() => navigate('/login')}/>
