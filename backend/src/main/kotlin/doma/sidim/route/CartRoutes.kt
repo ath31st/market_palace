@@ -1,8 +1,8 @@
 package doma.sidim.route
 
-import doma.sidim.dto.NewCartDto
 import doma.sidim.dto.CartChange
 import doma.sidim.dto.CartDto
+import doma.sidim.dto.NewCartDto
 import doma.sidim.model.toCartDto
 import doma.sidim.service.CartService
 import doma.sidim.util.userId
@@ -22,7 +22,7 @@ fun Route.cartRoutes(cartService: CartService) {
             val principal = call.principal<JWTPrincipal>()!!
             val authUserId = principal.userId()
 
-            cartService.getCart(authUserId)?.let {
+            cartService.getCartByUserId(authUserId)?.let {
                 call.respond(HttpStatusCode.OK, it.toCartDto())
             } ?: run {
                 call.respond(HttpStatusCode.OK, CartDto(null, emptyList()))
@@ -34,9 +34,17 @@ fun Route.cartRoutes(cartService: CartService) {
             val principal = call.principal<JWTPrincipal>()!!
             val authUserId = principal.userId()
 
-            cartService.existsCartByUserId(authUserId).let {
-                if (it) {
-                    cartService.deleteCartByUserId(authUserId)
+            cartService.existsCartByUserId(authUserId).let { isExists ->
+                if (isExists) {
+                    val cart = cartService.getCartByUserId(authUserId)
+                    cartService.updateProductInCart(cart!!.id!!, dto.productId, dto.quantity)
+                        .let { isSuccess ->
+                            if (isSuccess) {
+                                call.respond(HttpStatusCode.OK)
+                            } else {
+                                call.respond(HttpStatusCode.BadRequest)
+                            }
+                        }
                 }
             }
             cartService.createCart(dto, authUserId)
@@ -45,10 +53,8 @@ fun Route.cartRoutes(cartService: CartService) {
 
         put("/cart") {
             val cartChange = call.receive<CartChange>()
-            val principal = call.principal<JWTPrincipal>()!!
-            val authUserId = principal.userId()
 
-            cartService.updateProductInCart(authUserId, cartChange.productId, cartChange.quantity)
+            cartService.updateProductInCart(cartChange.cartId, cartChange.productId, cartChange.quantity)
                 .let {
                     if (it) {
                         call.respond(HttpStatusCode.OK)
