@@ -1,6 +1,8 @@
-import React, { useState } from 'react'
+import React, { useEffect } from 'react'
 import styled from 'styled-components'
 import QuantityControl from '../components/button/QuantityControl'
+import { fetchCart, updateCart } from '../redux/cartSlice'
+import { useDispatch, useSelector } from 'react-redux'
 
 const CartContainer = styled.div`
     display: flex;
@@ -89,51 +91,25 @@ const CreateOrderButton = styled.button`
 `
 
 const CartPage = () => {
-  const [cartItems, setCartItems] = useState([
-    {
-      id: 1,
-      image: 'path/to/image1.jpg',
-      title: 'Product title 1',
-      description: 'Small description',
-      price: 20,
-      quantity: 1,
-    },
-    {
-      id: 2,
-      image: 'path/to/image2.jpg',
-      title: 'Product title 2',
-      description: 'Small description',
-      price: 30,
-      quantity: 1,
-    },
-    {
-      id: 3,
-      image: 'path/to/image3.jpg',
-      title: 'Product title 3',
-      description: 'Small description',
-      price: 40,
-      quantity: 1,
-    },
-  ])
+  const dispatch = useDispatch()
+  const cartItems = useSelector(state => state.cart.items)
 
-  const incrementQuantity = (id) => {
-    setCartItems(prevItems =>
-      prevItems.map(item =>
-        item.id === id
-          ? { ...item, quantity: item.quantity + 1 }
-          : item,
-      ),
-    )
-  }
+  useEffect(() => {
+    dispatch(fetchCart())
+  }, [dispatch])
 
-  const decrementQuantity = (id) => {
-    setCartItems(prevItems =>
-      prevItems.map(item =>
-        item.id === id
-          ? { ...item, quantity: Math.max(item.quantity - 1, 0) }
-          : item,
-      ),
-    )
+  const handleQuantityChange = (id, quantity) => {
+    const updatedItem = cartItems.find(item => item.id === id)
+
+    if (updatedItem) {
+      const productUpdate = {
+        cartId: 9,
+        productId: updatedItem.id,
+        quantity: quantity,
+      }
+      console.log(productUpdate)
+      dispatch(updateCart(productUpdate))
+    }
   }
 
   return (
@@ -142,17 +118,19 @@ const CartPage = () => {
         {cartItems.map(item => (
           <CartItem key={item.id}>
             <ProductInfo>
-              <ProductImage src={item.image} alt={item.title}/>
+              <ProductImage src={item.imageLink} alt={item.title}/>
               <ProductDetails>
                 <ProductTitle>{item.title}</ProductTitle>
-                <ProductDescription>{item.description}</ProductDescription>
+                <ProductDescription>{item.smallDescription}</ProductDescription>
               </ProductDetails>
             </ProductInfo>
             <ProductPrice>${item.price}</ProductPrice>
             <QuantityControl
               quantity={item.quantity}
-              onIncrement={() => incrementQuantity(item.id)}
-              onDecrement={() => decrementQuantity(item.id)}
+              onIncrement={() => handleQuantityChange(item.id,
+                item.quantity + 1)}
+              onDecrement={() => handleQuantityChange(item.id,
+                Math.max(item.quantity - 1, 1))}
             />
           </CartItem>
         ))}
@@ -160,8 +138,7 @@ const CartPage = () => {
       <CartSummary>
         <SummaryItem>
           <span>Product count:</span>
-          <span>{cartItems.reduce((total, item) => total + item.quantity,
-            0)}</span>
+          <span>{cartItems.reduce((total, item) => total + item.quantity, 0)}</span>
         </SummaryItem>
         <SummaryItem>
           <span>Total price:</span>
