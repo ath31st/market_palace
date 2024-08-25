@@ -119,7 +119,8 @@ const ProductPage = () => {
   if (loading) return <p>Loading...</p>
   if (error) return <p>Error: {error.message}</p>
 
-  const isProductInCart = cartItems.some(item => item.productId === product.id)
+  const isProductInCart = Array.isArray(cartItems) && cartItems.length > 0 &&
+    cartItems.some(item => item.productId === product.id)
   const currentQuantity = isProductInCart ? cartItems.find(
     item => item.productId === product.id).quantity : 0
 
