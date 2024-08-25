@@ -43,6 +43,23 @@ class CartRepository(private val productRepository: ProductRepository) {
         }
     }
 
+    fun readByUserId(userId: Long): Cart? {
+        return transaction {
+            val cartRow = Carts.select { Carts.userId eq userId }
+                .mapNotNull {
+                    it.toCart()
+                }.singleOrNull()
+
+            cartRow?.let { cart ->
+                val products = CartProducts.select { CartProducts.cartId eq cart.id!! }
+                    .associate { it[CartProducts.productId] to it[CartProducts.quantity] }
+                    .mapKeys { (productId, _) -> productRepository.read(productId)!! }
+
+                cart.copy(products = products)
+            }
+        }
+    }
+
     fun delete(id: Long): Boolean {
         return transaction {
             val deletedProducts = CartProducts.deleteWhere { cartId eq id } > 0

@@ -14,6 +14,10 @@ class CartService(private val cartRepository: CartRepository) {
         return cartRepository.read(id)
     }
 
+    fun getCartByUserId(userId: Long): Cart? {
+        return cartRepository.readByUserId(userId)
+    }
+
     fun deleteCart(id: Long): Boolean {
         return cartRepository.delete(id)
     }
