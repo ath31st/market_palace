@@ -6,6 +6,7 @@ import doma.sidim.model.CartProducts
 import doma.sidim.model.Carts
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.inSubQuery
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class CartRepository(private val productRepository: ProductRepository) {
@@ -44,7 +45,10 @@ class CartRepository(private val productRepository: ProductRepository) {
 
     fun delete(id: Long): Boolean {
         return transaction {
-            Carts.deleteWhere { Carts.id eq id } > 0
+            val deletedProducts = CartProducts.deleteWhere { cartId eq id } > 0
+            val deletedCart = Carts.deleteWhere { Carts.id eq id } > 0
+
+            deletedProducts && deletedCart
         }
     }
 
@@ -65,7 +69,13 @@ class CartRepository(private val productRepository: ProductRepository) {
 
     fun deleteByUserId(userId: Long): Boolean {
         return transaction {
-            Carts.deleteWhere { Carts.userId eq userId } > 0
+            val deletedProducts = CartProducts.deleteWhere {
+                cartId inSubQuery Carts.slice(Carts.id).select { Carts.userId eq userId }
+            } > 0
+
+            val deletedCart = Carts.deleteWhere { Carts.userId eq userId } > 0
+
+            deletedProducts && deletedCart
         }
     }
 
