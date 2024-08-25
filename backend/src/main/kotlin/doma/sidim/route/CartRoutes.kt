@@ -1,7 +1,9 @@
 package doma.sidim.route
 
+import doma.sidim.dto.NewCartDto
 import doma.sidim.dto.CartChange
-import doma.sidim.dto.CartReq
+import doma.sidim.dto.CartDto
+import doma.sidim.model.toCartDto
 import doma.sidim.service.CartService
 import doma.sidim.util.userId
 import io.ktor.http.*
@@ -21,14 +23,14 @@ fun Route.cartRoutes(cartService: CartService) {
             val authUserId = principal.userId()
 
             cartService.getCart(authUserId)?.let {
-                call.respond(HttpStatusCode.OK, it)
+                call.respond(HttpStatusCode.OK, it.toCartDto())
             } ?: run {
-                call.respond(HttpStatusCode.NotFound)
+                call.respond(HttpStatusCode.OK, CartDto(null, emptyList()))
             }
         }
 
         post("/cart") {
-            val cartReq = call.receive<CartReq>()
+            val dto = call.receive<NewCartDto>()
             val principal = call.principal<JWTPrincipal>()!!
             val authUserId = principal.userId()
 
@@ -37,7 +39,7 @@ fun Route.cartRoutes(cartService: CartService) {
                     cartService.deleteCartByUserId(authUserId)
                 }
             }
-            cartService.createCart(cartReq, authUserId)
+            cartService.createCart(dto, authUserId)
             call.respond(HttpStatusCode.Created)
         }
 

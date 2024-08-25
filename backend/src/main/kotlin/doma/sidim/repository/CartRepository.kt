@@ -1,6 +1,6 @@
 package doma.sidim.repository
 
-import doma.sidim.dto.CartReq
+import doma.sidim.dto.NewCartDto
 import doma.sidim.model.Cart
 import doma.sidim.model.CartProducts
 import doma.sidim.model.Carts
@@ -9,17 +9,17 @@ import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class CartRepository(private val productRepository: ProductRepository) {
-    fun create(item: CartReq, userId: Long): Long {
+    fun create(item: NewCartDto, userId: Long): Long {
         var id: Long = 0
         transaction {
             id = Carts.insert {
                 it[Carts.userId] = userId
             }[Carts.id]
 
-            CartProducts.batchInsert(item.productIdsQuantities.entries) { (productId, quantity) ->
-                this[CartProducts.cartId] = id
-                this[CartProducts.productId] = productId
-                this[CartProducts.quantity] = quantity
+            CartProducts.insert {
+                it[cartId] = id
+                it[productId] = item.productId
+                it[quantity] = item.quantity
             }
         }
         return id

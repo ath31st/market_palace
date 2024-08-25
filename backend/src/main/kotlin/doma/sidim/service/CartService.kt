@@ -1,13 +1,13 @@
 package doma.sidim.service
 
-import doma.sidim.dto.CartReq
+import doma.sidim.dto.NewCartDto
 import doma.sidim.model.Cart
 import doma.sidim.repository.CartRepository
 
 class CartService(private val cartRepository: CartRepository) {
 
-    fun createCart(cartReq: CartReq, userId: Long): Long {
-        return cartRepository.create(cartReq, userId)
+    fun createCart(dto: NewCartDto, userId: Long): Long {
+        return cartRepository.create(dto, userId)
     }
 
     fun getCart(id: Long): Cart? {
