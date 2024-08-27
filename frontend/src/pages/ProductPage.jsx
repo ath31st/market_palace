@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { useDispatch, useSelector } from 'react-redux'
-import axios from '../config/axiosConfig'
 import styled from 'styled-components'
 import AddToCartButton from '../components/button/AddToCartButton'
 import QuantityControl from '../components/button/QuantityControl'
-import { fetchCart, updateCart, addToCart } from '../redux/cartSlice'
+import axios from '../config/axiosConfig'
+import { useCart } from '../hooks/useCart'
+import { addToCart, fetchCart } from '../redux/cartSlice'
+import { useDispatch } from 'react-redux'
 
 const ProductContainer = styled.div`
     display: flex;
@@ -72,13 +73,12 @@ const ProductPrice = styled.p`
 `
 
 const ProductPage = () => {
+  const dispatch = useDispatch()
   const { id } = useParams()
   const [product, setProduct] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
-  const dispatch = useDispatch()
-  const { items: cartItems, status: cartStatus } = useSelector(
-    state => state.cart)
+  const { cartItems, handleQuantityChange } = useCart()
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -93,36 +93,31 @@ const ProductPage = () => {
     }
 
     fetchProduct()
-    dispatch(fetchCart())
-  }, [id, dispatch])
+  }, [id])
 
-  const handleAddToCart = () => {
-    dispatch(addToCart({ productId: product.id, quantity: 1 }))
+  const handleAddToCart = async () => {
+    try {
+      await dispatch(addToCart({ productId: product.id, quantity: 1 }))
+      dispatch(fetchCart())
+    } catch (error) {
+      console.error('Error adding to cart:', error)
+    }
   }
 
   const handleIncrement = () => {
-    const existingItem = cartItems.find(item => item.productId === product.id)
-    if (existingItem) {
-      dispatch(updateCart(
-        { productId: product.id, quantity: existingItem.quantity + 1 }))
-    }
+    handleQuantityChange(product.id, 1)
   }
 
   const handleDecrement = () => {
-    const existingItem = cartItems.find(item => item.productId === product.id)
-    if (existingItem && existingItem.quantity > 1) {
-      dispatch(updateCart(
-        { productId: product.id, quantity: existingItem.quantity - 1 }))
-    }
+    handleQuantityChange(product.id, -1)
   }
 
   if (loading) return <p>Loading...</p>
   if (error) return <p>Error: {error.message}</p>
 
-  const isProductInCart = Array.isArray(cartItems) && cartItems.length > 0 &&
-    cartItems.some(item => item.productId === product.id)
-  const currentQuantity = isProductInCart ? cartItems.find(
-    item => item.productId === product.id).quantity : 0
+  const existingItem = Array.isArray(cartItems) ? cartItems.find(
+    item => item.id === product.id) : null
+  const currentQuantity = existingItem ? existingItem.quantity : 0
 
   return (
     <ProductContainer>
@@ -137,7 +132,7 @@ const ProductPage = () => {
         <VendorInfo>Vendor: {product.vendorInfo}</VendorInfo>
         <PriceAndButton>
           <ProductPrice>${product.price}/lb</ProductPrice>
-          {isProductInCart ? (
+          {currentQuantity > 0 ? (
             <QuantityControl
               quantity={currentQuantity}
               onIncrement={handleIncrement}
