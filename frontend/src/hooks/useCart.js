@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchCart, updateCart } from '../redux/cartSlice'
+import { addToCart, fetchCart, updateCart } from '../redux/cartSlice'
 import { useEffect } from 'react'
 
 export const useCart = () => {
@@ -29,5 +29,14 @@ export const useCart = () => {
     }
   }
 
-  return { cartItems, handleQuantityChange }
+  const handleAddToCart = async (productId) => {
+    try {
+      await dispatch(addToCart({ productId: productId, quantity: 1 }))
+      await dispatch(fetchCart())
+    } catch (error) {
+      console.error('Error adding to cart:', error)
+    }
+  }
+
+  return { cartItems, handleQuantityChange, handleAddToCart }
 }
