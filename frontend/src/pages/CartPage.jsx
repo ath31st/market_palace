@@ -1,9 +1,8 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import styled from 'styled-components'
-import { fetchCart, updateCart } from '../redux/cartSlice'
-import { useDispatch, useSelector } from 'react-redux'
 import SubmitButton from '../components/button/SubmitButton'
 import CartItem from '../components/CartItem'
+import { useCart } from '../hooks/useCart'
 
 const CartContainer = styled.div`
     display: flex;
@@ -33,28 +32,7 @@ const SummaryItem = styled.div`
 `
 
 const CartPage = () => {
-  const dispatch = useDispatch()
-  const cartItems = useSelector(state => state.cart.items)
-  const cartId = useSelector(state => state.cart.id)
-
-  useEffect(() => {
-    dispatch(fetchCart())
-  }, [dispatch])
-
-  const handleQuantityChange = async (id, changeQuantity) => {
-    const updatedItem = cartItems.find(item => item.id === id)
-
-    if (updatedItem) {
-      const productUpdate = {
-        cartId: cartId,
-        productId: updatedItem.id,
-        changeQuantity: changeQuantity,
-      }
-      console.log(productUpdate)
-      await dispatch(updateCart(productUpdate))
-      .then(() => {dispatch(fetchCart())})
-    }
-  }
+  const { cartItems, handleQuantityChange } = useCart()
 
   return (
     <CartContainer>
