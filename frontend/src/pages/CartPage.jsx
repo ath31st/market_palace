@@ -3,6 +3,7 @@ import styled from 'styled-components'
 import QuantityControl from '../components/button/QuantityControl'
 import { fetchCart, updateCart } from '../redux/cartSlice'
 import { useDispatch, useSelector } from 'react-redux'
+import SubmitButton from '../components/button/SubmitButton'
 
 const CartContainer = styled.div`
     display: flex;
@@ -20,6 +21,7 @@ const CartItem = styled.div`
     border: 1px solid #ddd;
     margin-bottom: 10px;
     background-color: #f9f9f9;
+    border-radius: 5px;
 `
 
 const ProductInfo = styled.div`
@@ -32,6 +34,7 @@ const ProductImage = styled.img`
     object-fit: cover;
     border: 1px solid #ddd;
     margin-right: 20px;
+    border-radius: 5px;
 `
 
 const ProductDetails = styled.div`
@@ -66,6 +69,8 @@ const CartSummary = styled.div`
     border: 1px solid #ddd;
     margin-left: 20px;
     background-color: #f9f9f9;
+    border-radius: 5px;
+    height: 100%;
 `
 
 const SummaryItem = styled.div`
@@ -74,20 +79,6 @@ const SummaryItem = styled.div`
     margin-bottom: 10px;
     font-size: 20px;
     color: green;
-`
-
-const CreateOrderButton = styled.button`
-    width: 100%;
-    padding: 10px;
-    background-color: #32CD32;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-
-    &:hover {
-        background-color: #28a745;
-    }
 `
 
 const CartPage = () => {
@@ -138,14 +129,15 @@ const CartPage = () => {
       <CartSummary>
         <SummaryItem>
           <span>Product count:</span>
-          <span>{cartItems.reduce((total, item) => total + item.quantity, 0)}</span>
+          <span>{cartItems.reduce((total, item) => total + item.quantity,
+            0)}</span>
         </SummaryItem>
         <SummaryItem>
           <span>Total price:</span>
           <span>${cartItems.reduce(
             (total, item) => total + item.price * item.quantity, 0)}</span>
         </SummaryItem>
-        <CreateOrderButton>Create order</CreateOrderButton>
+        <SubmitButton>Create order</SubmitButton>
       </CartSummary>
     </CartContainer>
   )
