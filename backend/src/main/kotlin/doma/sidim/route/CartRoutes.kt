@@ -54,7 +54,11 @@ fun Route.cartRoutes(cartService: CartService) {
         put("/cart") {
             val cartChange = call.receive<CartChange>()
 
-            cartService.updateProductInCart(cartChange.cartId, cartChange.productId, cartChange.quantity)
+            cartService.updateProductInCart(
+                cartChange.cartId,
+                cartChange.productId,
+                cartChange.changeQuantity
+            )
                 .let {
                     if (it) {
                         call.respond(HttpStatusCode.OK)

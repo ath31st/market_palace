@@ -6,5 +6,5 @@ import kotlinx.serialization.Serializable
 data class CartChange(
     val cartId: Long,
     val productId: Long,
-    val quantity: Int,
+    val changeQuantity: Int,
 )
