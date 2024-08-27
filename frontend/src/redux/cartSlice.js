@@ -40,6 +40,7 @@ export const updateCart = createAsyncThunk(
 const cartSlice = createSlice({
   name: 'cart',
   initialState: {
+    id: null,
     items: [],
     status: 'idle',
     error: null,
@@ -51,6 +52,7 @@ const cartSlice = createSlice({
     }).addCase(fetchCart.fulfilled, (state, action) => {
       state.status = 'succeeded'
       state.items = action.payload.products
+      state.id = action.payload.cartId
     }).addCase(fetchCart.rejected, (state, action) => {
       state.status = 'failed'
       state.error = action.payload
