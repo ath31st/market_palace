@@ -1,7 +1,11 @@
 import React from 'react'
 import styled from 'styled-components'
 import AddToCartButton from './button/AddToCartButton'
+import QuantityControl from './button/QuantityControl'
 import { useNavigate } from 'react-router-dom'
+import { useDispatch } from 'react-redux'
+import { addToCart, fetchCart } from '../redux/cartSlice'
+import { useCart } from '../hooks/useCart'
 
 const ProductContainer = styled.div`
     border: 1px solid #ddd;
@@ -34,17 +38,40 @@ const ProductPrice = styled.p`
 
 const Product = ({ id, image, title, price }) => {
   const navigate = useNavigate()
+  const dispatch = useDispatch()
+  const { cartItems, handleQuantityChange } = useCart()
 
   const handleProductClick = () => {
     navigate(`/products/${id}`)
   }
+
+  const handleAddToCart = async () => {
+    try {
+      await dispatch(addToCart({ productId: id, quantity: 1 }))
+      dispatch(fetchCart())
+    } catch (error) {
+      console.error('Error adding to cart:', error)
+    }
+  }
+
+  const existingItem = Array.isArray(cartItems) ? cartItems.find(
+    item => item.id === id) : null
+  const currentQuantity = existingItem ? existingItem.quantity : 0
 
   return (
     <ProductContainer>
       <ProductImage onClick={handleProductClick} src={image} alt={title}/>
       <ProductTitle onClick={handleProductClick}>{title}</ProductTitle>
       <ProductPrice>${price}/lb</ProductPrice>
-      <AddToCartButton>Add to cart</AddToCartButton>
+      {currentQuantity > 0 ? (
+        <QuantityControl
+          quantity={currentQuantity}
+          onIncrement={() => handleQuantityChange(id, 1)}
+          onDecrement={() => handleQuantityChange(id, -1)}
+        />
+      ) : (
+        <AddToCartButton onClick={handleAddToCart}>Add to cart</AddToCartButton>
+      )}
     </ProductContainer>
   )
 }
