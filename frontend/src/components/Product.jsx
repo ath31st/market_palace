@@ -3,8 +3,6 @@ import styled from 'styled-components'
 import AddToCartButton from './button/AddToCartButton'
 import QuantityControl from './button/QuantityControl'
 import { useNavigate } from 'react-router-dom'
-import { useDispatch } from 'react-redux'
-import { addToCart, fetchCart } from '../redux/cartSlice'
 import { useCart } from '../hooks/useCart'
 
 const ProductContainer = styled.div`
@@ -38,20 +36,10 @@ const ProductPrice = styled.p`
 
 const Product = ({ id, image, title, price }) => {
   const navigate = useNavigate()
-  const dispatch = useDispatch()
-  const { cartItems, handleQuantityChange } = useCart()
+  const { cartItems, handleQuantityChange, handleAddToCart } = useCart()
 
   const handleProductClick = () => {
     navigate(`/products/${id}`)
-  }
-
-  const handleAddToCart = async () => {
-    try {
-      await dispatch(addToCart({ productId: id, quantity: 1 }))
-      dispatch(fetchCart())
-    } catch (error) {
-      console.error('Error adding to cart:', error)
-    }
   }
 
   const existingItem = Array.isArray(cartItems) ? cartItems.find(
@@ -70,7 +58,8 @@ const Product = ({ id, image, title, price }) => {
           onDecrement={() => handleQuantityChange(id, -1)}
         />
       ) : (
-        <AddToCartButton onClick={handleAddToCart}>Add to cart</AddToCartButton>
+        <AddToCartButton onClick={() =>
+          handleAddToCart(id)}>Add to cart</AddToCartButton>
       )}
     </ProductContainer>
   )
