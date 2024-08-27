@@ -104,14 +104,6 @@ const ProductPage = () => {
     }
   }
 
-  const handleIncrement = () => {
-    handleQuantityChange(product.id, 1)
-  }
-
-  const handleDecrement = () => {
-    handleQuantityChange(product.id, -1)
-  }
-
   if (loading) return <p>Loading...</p>
   if (error) return <p>Error: {error.message}</p>
 
@@ -135,8 +127,8 @@ const ProductPage = () => {
           {currentQuantity > 0 ? (
             <QuantityControl
               quantity={currentQuantity}
-              onIncrement={handleIncrement}
-              onDecrement={handleDecrement}
+              onIncrement={() => handleQuantityChange(product.id, 1)}
+              onDecrement={() => handleQuantityChange(product.id, -1)}
             />
           ) : (
             <AddToCartButton onClick={handleAddToCart}>Add to
