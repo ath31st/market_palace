@@ -41,18 +41,18 @@ const CartPage = () => {
     dispatch(fetchCart())
   }, [dispatch])
 
-  const handleQuantityChange = (id, quantity) => {
+  const handleQuantityChange = async (id, changeQuantity) => {
     const updatedItem = cartItems.find(item => item.id === id)
 
     if (updatedItem) {
       const productUpdate = {
         cartId: cartId,
         productId: updatedItem.id,
-        quantity: quantity,
+        changeQuantity: changeQuantity,
       }
       console.log(productUpdate)
-      dispatch(updateCart(productUpdate))
-      dispatch(fetchCart())
+      await dispatch(updateCart(productUpdate))
+      .then(() => {dispatch(fetchCart())})
     }
   }
 
