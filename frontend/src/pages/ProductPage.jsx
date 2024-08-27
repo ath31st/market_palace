@@ -5,8 +5,6 @@ import AddToCartButton from '../components/button/AddToCartButton'
 import QuantityControl from '../components/button/QuantityControl'
 import axios from '../config/axiosConfig'
 import { useCart } from '../hooks/useCart'
-import { addToCart, fetchCart } from '../redux/cartSlice'
-import { useDispatch } from 'react-redux'
 
 const ProductContainer = styled.div`
     display: flex;
@@ -73,12 +71,11 @@ const ProductPrice = styled.p`
 `
 
 const ProductPage = () => {
-  const dispatch = useDispatch()
   const { id } = useParams()
   const [product, setProduct] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
-  const { cartItems, handleQuantityChange } = useCart()
+  const { cartItems, handleQuantityChange, handleAddToCart } = useCart()
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -94,15 +91,6 @@ const ProductPage = () => {
 
     fetchProduct()
   }, [id])
-
-  const handleAddToCart = async () => {
-    try {
-      await dispatch(addToCart({ productId: product.id, quantity: 1 }))
-      dispatch(fetchCart())
-    } catch (error) {
-      console.error('Error adding to cart:', error)
-    }
-  }
 
   if (loading) return <p>Loading...</p>
   if (error) return <p>Error: {error.message}</p>
@@ -131,8 +119,8 @@ const ProductPage = () => {
               onDecrement={() => handleQuantityChange(product.id, -1)}
             />
           ) : (
-            <AddToCartButton onClick={handleAddToCart}>Add to
-              cart</AddToCartButton>
+            <AddToCartButton onClick={() =>
+              handleAddToCart(product.id)}>Add to cart</AddToCartButton>
           )}
         </PriceAndButton>
       </InfoContainer>
