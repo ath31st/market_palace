@@ -84,6 +84,7 @@ const SummaryItem = styled.div`
 const CartPage = () => {
   const dispatch = useDispatch()
   const cartItems = useSelector(state => state.cart.items)
+  const cartId = useSelector(state => state.cart.id)
 
   useEffect(() => {
     dispatch(fetchCart())
@@ -94,7 +95,7 @@ const CartPage = () => {
 
     if (updatedItem) {
       const productUpdate = {
-        cartId: 9,
+        cartId: cartId,
         productId: updatedItem.id,
         quantity: quantity,
       }
@@ -118,10 +119,8 @@ const CartPage = () => {
             <ProductPrice>${item.price}</ProductPrice>
             <QuantityControl
               quantity={item.quantity}
-              onIncrement={() => handleQuantityChange(item.id,
-                item.quantity + 1)}
-              onDecrement={() => handleQuantityChange(item.id,
-                Math.max(item.quantity - 1, 1))}
+              onIncrement={() => handleQuantityChange(item.id, 1)}
+              onDecrement={() => handleQuantityChange(item.id, -1)}
             />
           </CartItem>
         ))}
