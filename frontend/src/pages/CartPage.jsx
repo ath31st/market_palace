@@ -1,8 +1,11 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
 import SubmitButton from '../components/button/SubmitButton'
 import CartItem from '../components/CartItem'
 import { useCart } from '../hooks/useCart'
+import { useDispatch, useSelector } from 'react-redux'
+import { createOrder } from '../redux/orderSlice'
+import { clearCart } from '../redux/cartSlice'
 
 const CartContainer = styled.div`
     display: flex;
@@ -33,6 +36,28 @@ const SummaryItem = styled.div`
 
 const CartPage = () => {
   const { cartItems, handleQuantityChange } = useCart()
+  const dispatch = useDispatch()
+  const orderSuccess = useSelector(state => state.order.success)
+  const [deliveryAddress, setDeliveryAddress] = useState('')
+  const [orderMessage, setOrderMessage] = useState('')
+
+  useEffect(() => {
+    if (orderSuccess) {
+      setOrderMessage('Order created successfully!')
+      dispatch(clearCart())
+    }
+  }, [orderSuccess, dispatch])
+
+  const handleCreateOrder = () => {
+    const orderCost = cartItems.reduce(
+      (total, item) => total + item.price * item.quantity, 0)
+    const productIdsQuantities = cartItems.reduce((map, item) => {
+      map[item.id] = item.quantity
+      return map
+    }, {})
+
+    dispatch(createOrder({ orderCost, deliveryAddress, productIdsQuantities }))
+  }
 
   return (
     <CartContainer>
@@ -60,7 +85,17 @@ const CartPage = () => {
           <span>${cartItems ? cartItems.reduce(
             (total, item) => total + item.price * item.quantity, 0) : 0}</span>
         </SummaryItem>
-        <SubmitButton>Create order</SubmitButton>
+        <div>
+          <label htmlFor="deliveryAddress">Delivery Address:</label>
+          <input
+            type="text"
+            id="deliveryAddress"
+            value={deliveryAddress}
+            onChange={(e) => setDeliveryAddress(e.target.value)}
+          />
+        </div>
+        <SubmitButton onClick={handleCreateOrder}>Create order</SubmitButton>
+        {orderMessage && <p>{orderMessage}</p>}
       </CartSummary>
     </CartContainer>
   )
