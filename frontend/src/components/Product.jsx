@@ -4,6 +4,7 @@ import AddToCartButton from './button/AddToCartButton'
 import QuantityControl from './button/QuantityControl'
 import { useNavigate } from 'react-router-dom'
 import { useCart } from '../hooks/useCart'
+import useAuth from '../hooks/useAuth'
 
 const ProductContainer = styled.div`
     border: 1px solid #ddd;
@@ -36,10 +37,19 @@ const ProductPrice = styled.p`
 
 const Product = ({ id, image, title, price }) => {
   const navigate = useNavigate()
+  const isAuthenticated = useAuth().isAuthenticated
   const { cartItems, handleQuantityChange, handleAddToCart } = useCart()
 
   const handleProductClick = () => {
     navigate(`/products/${id}`)
+  }
+
+  const handleAddToCartClick = () => {
+    if (!isAuthenticated) {
+      navigate('/login')
+    } else {
+      handleAddToCart(id)
+    }
   }
 
   const existingItem = Array.isArray(cartItems) ? cartItems.find(
@@ -58,8 +68,9 @@ const Product = ({ id, image, title, price }) => {
           onDecrement={() => handleQuantityChange(id, -1)}
         />
       ) : (
-        <AddToCartButton onClick={() =>
-          handleAddToCart(id)}>Add to cart</AddToCartButton>
+        <AddToCartButton onClick={handleAddToCartClick}>
+          Add to cart
+        </AddToCartButton>
       )}
     </ProductContainer>
   )
