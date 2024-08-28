@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import styled from 'styled-components'
 import AddToCartButton from '../components/button/AddToCartButton'
 import QuantityControl from '../components/button/QuantityControl'
 import axios from '../config/axiosConfig'
 import { useCart } from '../hooks/useCart'
+import useAuth from '../hooks/useAuth'
 
 const ProductContainer = styled.div`
     display: flex;
@@ -71,6 +72,8 @@ const ProductPrice = styled.p`
 `
 
 const ProductPage = () => {
+  const navigate = useNavigate()
+  const isAuthenticated = useAuth().isAuthenticated
   const { id } = useParams()
   const [product, setProduct] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -91,6 +94,14 @@ const ProductPage = () => {
 
     fetchProduct()
   }, [id])
+
+  const handleAddToCartClick = () => {
+    if (!isAuthenticated) {
+      navigate('/login')
+    } else {
+      handleAddToCart(id)
+    }
+  }
 
   if (loading) return <p>Loading...</p>
   if (error) return <p>Error: {error.message}</p>
@@ -119,8 +130,9 @@ const ProductPage = () => {
               onDecrement={() => handleQuantityChange(product.id, -1)}
             />
           ) : (
-            <AddToCartButton onClick={() =>
-              handleAddToCart(product.id)}>Add to cart</AddToCartButton>
+            <AddToCartButton onClick={handleAddToCartClick}>
+              Add to cart
+            </AddToCartButton>
           )}
         </PriceAndButton>
       </InfoContainer>
