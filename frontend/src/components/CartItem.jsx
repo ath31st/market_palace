@@ -1,6 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import QuantityControl from '../components/button/QuantityControl'
+import { useNavigate } from 'react-router-dom'
 
 const CartItemContainer = styled.div`
     display: flex;
@@ -23,6 +24,7 @@ const ProductImage = styled.img`
     border: 1px solid #ddd;
     margin-right: 20px;
     border-radius: 5px;
+    cursor: pointer;
 `
 
 const ProductDetails = styled.div`
@@ -52,10 +54,16 @@ const ProductPrice = styled.div`
 `
 
 const CartItem = React.memo(({ item, handleQuantityChange }) => {
+  const navigate = useNavigate()
+
+  const handleProductClick = () => {
+    navigate(`/products/${item.id}`)
+  }
+
   return (
     <CartItemContainer>
       <ProductInfo>
-        <ProductImage src={item.imageLink} alt={item.title}/>
+        <ProductImage onClick={handleProductClick} src={item.imageLink} alt={item.title}/>
         <ProductDetails>
           <ProductTitle>{item.title}</ProductTitle>
           <ProductDescription>{item.smallDescription}</ProductDescription>
