@@ -45,7 +45,14 @@ const cartSlice = createSlice({
     status: 'idle',
     error: null,
   },
-  reducers: {},
+  reducers: {
+    clearCart: (state) => {
+      state.items = []
+      state.id = null
+      state.status = 'idle'
+      state.error = null
+    },
+  },
   extraReducers: (builder) => {
     builder.addCase(fetchCart.pending, (state) => {
       state.status = 'loading'
@@ -72,4 +79,5 @@ const cartSlice = createSlice({
   },
 })
 
+export const { clearCart } = cartSlice.actions
 export default cartSlice.reducer
