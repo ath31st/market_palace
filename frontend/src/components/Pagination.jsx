@@ -12,12 +12,12 @@ const PageButton = styled.button`
     margin: 0 5px;
     border: 1px solid #ddd;
     border-radius: 5px;
-    background-color: ${props => props.active ? '#32CD32' : 'white'};
-    color: ${props => props.active ? 'white' : '#555'};
+    background-color: ${props => props.$active ? '#32CD32' : 'white'};
+    color: ${props => props.$active ? 'white' : '#555'};
     cursor: pointer;
 
     &:hover {
-        background-color: ${props => props.active ? '#32CD32' : '#f1f1f1'};
+        background-color: ${props => props.$active ? '#32CD32' : '#f1f1f1'};
     }
 `
 
@@ -29,7 +29,7 @@ const Pagination = ({ totalPages, currentPage, onPageChange }) => {
       {pages.map(page => (
         <PageButton
           key={page}
-          active={page === currentPage}
+          $active={page === currentPage}
           onClick={() => onPageChange(page)}
         >
           {page}
