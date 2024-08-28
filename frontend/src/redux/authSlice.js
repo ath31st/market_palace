@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import axios from 'axios'
 import { jwtDecode } from 'jwt-decode'
+import { clearCart } from './cartSlice'
 
 const apiUrl = process.env.REACT_APP_API_BASE_URL
 
@@ -26,9 +27,10 @@ export const login = createAsyncThunk(
 
 export const performLogout = createAsyncThunk(
   'auth/logout',
-  async (_, { rejectWithValue }) => {
+  async (_, { rejectWithValue, dispatch }) => {
     try {
       localStorage.removeItem('jwtToken')
+      dispatch(clearCart())
       return {}
     } catch (error) {
       return rejectWithValue('Logout failed')
