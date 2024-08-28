@@ -36,7 +36,7 @@ fun Application.configureRouting(
                 userRoutes(userService)
                 productRoutes(productService)
                 cartRoutes(cartService)
-                orderRoutes(orderService)
+                orderRoutes(orderService, cartService)
             }
         }
     }
