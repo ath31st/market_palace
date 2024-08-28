@@ -6,6 +6,13 @@ import { useCart } from '../hooks/useCart'
 import { useDispatch, useSelector } from 'react-redux'
 import { createOrder } from '../redux/orderSlice'
 import { clearCart } from '../redux/cartSlice'
+import InputField from '../components/input/InputField'
+
+const CartPageContainer = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: center;
+`
 
 const CartContainer = styled.div`
     display: flex;
@@ -34,6 +41,23 @@ const SummaryItem = styled.div`
     color: green;
 `
 
+const EmptyCartContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding-top: 70px;
+`
+
+const EmptyCartImage = styled.div`
+    background-image: url('/your_cart_is_empty.png');
+    width: 495px;
+    height: 390px;
+    margin-bottom: 20px;
+    border-radius: 120px;
+    background-color: rgba(70, 255, 70, 0.71);
+`
+
 const CartPage = () => {
   const { cartItems, handleQuantityChange } = useCart()
   const dispatch = useDispatch()
@@ -60,44 +84,49 @@ const CartPage = () => {
   }
 
   return (
-    <CartContainer>
-      <CartItems>
-        {cartItems && cartItems.length > 0 ? (
-          cartItems.map(item => (
-            <CartItem
-              key={item.id}
-              item={item}
-              handleQuantityChange={handleQuantityChange}
+    <CartPageContainer>
+      {cartItems && cartItems.length > 0 ? (
+        <CartContainer>
+          <CartItems>
+            {cartItems.map(item => (
+              <CartItem
+                key={item.id}
+                item={item}
+                handleQuantityChange={handleQuantityChange}
+              />
+            ))}
+          </CartItems>
+          <CartSummary>
+            <SummaryItem>
+              <span>Product count:</span>
+              <span>{cartItems.reduce(
+                (total, item) => total + item.quantity, 0)}</span>
+            </SummaryItem>
+            <SummaryItem>
+              <span>Total price:</span>
+              <span>${cartItems.reduce(
+                (total, item) => total + item.price * item.quantity, 0)}</span>
+            </SummaryItem>
+            <InputField
+              type="text"
+              name="deliveryAddress"
+              placeholder="Delivery address"
+              value={deliveryAddress}
+              onChange={(e) =>
+                setDeliveryAddress(e.target.value)}
             />
-          ))
-        ) : (
-          <p>Your cart is empty</p>
-        )}
-      </CartItems>
-      <CartSummary>
-        <SummaryItem>
-          <span>Product count:</span>
-          <span>{cartItems ? cartItems.reduce(
-            (total, item) => total + item.quantity, 0) : 0}</span>
-        </SummaryItem>
-        <SummaryItem>
-          <span>Total price:</span>
-          <span>${cartItems ? cartItems.reduce(
-            (total, item) => total + item.price * item.quantity, 0) : 0}</span>
-        </SummaryItem>
-        <div>
-          <label htmlFor="deliveryAddress">Delivery Address:</label>
-          <input
-            type="text"
-            id="deliveryAddress"
-            value={deliveryAddress}
-            onChange={(e) => setDeliveryAddress(e.target.value)}
-          />
-        </div>
-        <SubmitButton onClick={handleCreateOrder}>Create order</SubmitButton>
-        {orderMessage && <p>{orderMessage}</p>}
-      </CartSummary>
-    </CartContainer>
+            <SubmitButton onClick={handleCreateOrder}>
+              Create order
+            </SubmitButton>
+            {orderMessage && <p>{orderMessage}</p>}
+          </CartSummary>
+        </CartContainer>
+      ) : (
+        <EmptyCartContainer>
+          <EmptyCartImage/>
+        </EmptyCartContainer>
+      )}
+    </CartPageContainer>
   )
 }
 
