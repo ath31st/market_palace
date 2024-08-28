@@ -16,11 +16,17 @@ fun Cart.toCartDto(): CartDto {
     return CartDto(
         this.id,
         products = this.products.entries.map { entry ->
+            val smallDescription = if (entry.key.description.length > 100) {
+                entry.key.description.substring(0, 100) + "..."
+            } else {
+                entry.key.description
+            }
+
             ProductInCartDto(
                 entry.key.id!!,
                 entry.key.title,
                 entry.value,
-                entry.key.description,
+                smallDescription,
                 entry.key.imageLink,
                 entry.key.price
             )
