@@ -1,6 +1,7 @@
 package doma.sidim.route
 
 import doma.sidim.dto.NewOrderDto
+import doma.sidim.model.toOrderDto
 import doma.sidim.service.CartService
 import doma.sidim.service.OrderService
 import doma.sidim.util.userId
@@ -22,7 +23,7 @@ fun Route.orderRoutes(orderService: OrderService, cartService: CartService) {
 
             val orders = orderService.getOrdersByUserId(authUserId)
             if (orders.isNotEmpty()) {
-                call.respond(HttpStatusCode.OK, orders)
+                call.respond(HttpStatusCode.OK, orders.map { it.toOrderDto() })
             } else {
                 call.respond(HttpStatusCode.BadRequest)
             }
@@ -42,6 +43,5 @@ fun Route.orderRoutes(orderService: OrderService, cartService: CartService) {
                 }
             }
         }
-
     }
 }

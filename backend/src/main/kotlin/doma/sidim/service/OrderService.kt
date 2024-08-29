@@ -9,7 +9,8 @@ import java.time.LocalDateTime
 class OrderService(private val orderRepository: OrderRepository) {
 
     fun createOrder(newOrder: NewOrderDto, userId: Long): Long {
-        val deliveryDate = LocalDateTime.now()
+        val days = (2..5).random().toLong()
+        val deliveryDate = LocalDateTime.now().plusDays(days)
         return orderRepository.create(newOrder, userId, deliveryDate)
     }
 
