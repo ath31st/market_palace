@@ -1,6 +1,6 @@
-import React from 'react';
-import styled from 'styled-components';
-import { BsSearch } from 'react-icons/bs';
+import React, { useState } from 'react'
+import styled from 'styled-components'
+import { BsSearch } from 'react-icons/bs'
 
 const SearchAndSortContainer = styled.div`
     display: flex;
@@ -9,7 +9,7 @@ const SearchAndSortContainer = styled.div`
     align-items: center;
     padding: 10px 20px;
     margin-top: 10px;
-`;
+`
 
 const SearchBar = styled.div`
     display: flex;
@@ -19,7 +19,7 @@ const SearchBar = styled.div`
     border-radius: 5px;
     width: 250px;
     height: 35px;
-`;
+`
 
 const SearchInput = styled.input`
     border: none;
@@ -28,7 +28,7 @@ const SearchInput = styled.input`
     font-size: 16px;
     flex-grow: 1;
     color: #555;
-`;
+`
 
 const SortSelect = styled.select`
     padding: 5px 10px;
@@ -38,22 +38,43 @@ const SortSelect = styled.select`
     width: 250px;
     height: 35px;
     color: #555;
-`;
+`
 
-const SearchAndSort = () => {
+const SearchAndSort = ({ onSearch, onSort, sortOptions }) => {
+  const [searchTerm, setSearchTerm] = useState('')
+  const [sortBy, setSortBy] = useState('default')
+
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value)
+    onSearch(e.target.value)
+  }
+
+  const handleSortChange = (e) => {
+    setSortBy(e.target.value)
+    onSort(e.target.value)
+  }
+
   return (
     <SearchAndSortContainer>
       <SearchBar>
-        <SearchInput type="text" placeholder="Search input" />
-        <BsSearch />
+        <SearchInput
+          type="text"
+          placeholder="Search products"
+          value={searchTerm}
+          onChange={handleSearchChange}
+        />
+        <BsSearch/>
       </SearchBar>
-      <SortSelect>
+      <SortSelect value={sortBy} onChange={handleSortChange}>
         <option value="default">Sort by</option>
-        <option value="price">Price</option>
-        <option value="title">Title</option>
+        {sortOptions.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
       </SortSelect>
     </SearchAndSortContainer>
-  );
-};
+  )
+}
 
-export default SearchAndSort;
+export default SearchAndSort
