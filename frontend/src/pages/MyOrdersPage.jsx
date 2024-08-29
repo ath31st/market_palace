@@ -54,6 +54,7 @@ const ProductPhoto = styled.img`
     object-fit: cover;
     border: 1px solid #ddd;
     cursor: pointer;
+    border-radius: 5px;
 `
 
 const OrderStatus = styled.div`
