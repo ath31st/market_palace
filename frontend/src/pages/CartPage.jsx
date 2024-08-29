@@ -63,11 +63,9 @@ const CartPage = () => {
   const dispatch = useDispatch()
   const orderSuccess = useSelector(state => state.order.success)
   const [deliveryAddress, setDeliveryAddress] = useState('')
-  const [orderMessage, setOrderMessage] = useState('')
 
   useEffect(() => {
     if (orderSuccess) {
-      setOrderMessage('Order created successfully!')
       dispatch(clearCart())
     }
   }, [orderSuccess, dispatch])
@@ -118,7 +116,6 @@ const CartPage = () => {
             <SubmitButton onClick={handleCreateOrder}>
               Create order
             </SubmitButton>
-            {orderMessage && <p>{orderMessage}</p>}
           </CartSummary>
         </CartContainer>
       ) : (
