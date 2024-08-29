@@ -21,6 +21,7 @@ const OrderItem = styled.div`
     border: 1px solid #ddd;
     margin-bottom: 20px;
     background-color: #f9f9f9;
+    border-radius: 5px;
 `
 
 const OrderDetails = styled.div`
