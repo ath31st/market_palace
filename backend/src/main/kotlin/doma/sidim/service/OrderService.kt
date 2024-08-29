@@ -4,6 +4,7 @@ import doma.sidim.dto.NewOrderDto
 import doma.sidim.model.Order
 import doma.sidim.repository.OrderRepository
 import doma.sidim.util.OrderStatus
+import org.jetbrains.exposed.sql.SortOrder
 import java.time.LocalDateTime
 
 class OrderService(private val orderRepository: OrderRepository) {
@@ -18,8 +19,18 @@ class OrderService(private val orderRepository: OrderRepository) {
         return orderRepository.read(id)
     }
 
-    fun getOrdersByUserId(userId: Long): List<Order> {
-        return orderRepository.findOrdersByUserId(userId)
+    fun getOrdersByUserId(
+        userId: Long,
+        sortOrder: SortOrder,
+        search: String?,
+        sortBy: String?
+    ): List<Order> {
+        val searchableId: Long? = try {
+            search?.toLong()
+        } catch (e: Exception) {
+            null
+        }
+        return orderRepository.findOrdersByUserId(userId, sortOrder, searchableId, sortBy)
     }
 
     fun deleteOrder(id: Long): Boolean {
