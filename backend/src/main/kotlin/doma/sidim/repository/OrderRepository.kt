@@ -4,11 +4,9 @@ import doma.sidim.dto.NewOrderDto
 import doma.sidim.model.Order
 import doma.sidim.model.OrderProducts
 import doma.sidim.model.Orders
-import doma.sidim.model.Products
 import doma.sidim.util.OrderStatus
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.like
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.LocalDateTime
 
