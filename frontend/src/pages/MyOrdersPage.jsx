@@ -77,11 +77,22 @@ const MyOrdersPage = () => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const navigate = useNavigate()
+  const [search, setSearch] = useState('')
+  const [sortBy, setSortBy] = useState('default')
+  const sortOptions = [
+    { value: 'price', label: 'Price' },
+    { value: 'date', label: 'Date' },
+  ]
 
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const response = await axios.get('/api/v1/my-orders')
+        const response = await axios.get('/api/v1/my-orders', {
+          params: {
+            search: search || undefined,
+            sortBy: sortBy !== 'default' ? sortBy : undefined,
+          },
+        })
         setOrders(response.data)
         setLoading(false)
       } catch (error) {
@@ -90,7 +101,7 @@ const MyOrdersPage = () => {
     }
 
     fetchOrders()
-  }, [])
+  }, [search, sortBy])
 
   const handleProductClick = (id) => {
     navigate(`/products/${id}`)
@@ -98,7 +109,12 @@ const MyOrdersPage = () => {
 
   return (
     <OrdersContainer>
-      <SearchAndSort/>
+      <SearchAndSort
+        onSort={setSortBy}
+        onSearch={setSearch}
+        sortOptions={sortOptions}
+        searchPlaceholder={'Search orders'}
+      />
       {loading ? <p>Loading...</p> : error ? <p>Error: {error.message}</p> :
         <>
           <OrderList>
