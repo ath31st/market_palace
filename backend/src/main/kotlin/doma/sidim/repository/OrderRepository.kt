@@ -4,9 +4,11 @@ import doma.sidim.dto.NewOrderDto
 import doma.sidim.model.Order
 import doma.sidim.model.OrderProducts
 import doma.sidim.model.Orders
+import doma.sidim.model.Products
 import doma.sidim.util.OrderStatus
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.like
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.LocalDateTime
 
@@ -49,12 +51,30 @@ class OrderRepository(private val productRepository: ProductRepository) {
         }
     }
 
-    fun findOrdersByUserId(userId: Long): List<Order> {
+    fun findOrdersByUserId(
+        userId: Long,
+        sortOrder: SortOrder,
+        search: Long?,
+        sortBy: String?
+    ): List<Order> {
         return transaction {
-            val orderRows = Orders.select { Orders.userId eq userId }
-                .mapNotNull {
-                    it.toOrder()
+            var query = Orders.select { Orders.userId eq userId }
+
+            search?.let {
+                query = query.andWhere { Orders.id.eq(it) }
+            }
+
+            sortBy?.let {
+                query = when (it) {
+                    "date" -> query.orderBy(Orders.orderDate to sortOrder)
+                    "cost" -> query.orderBy(Orders.orderCost to sortOrder)
+                    else -> query
                 }
+            }
+
+            val orderRows = query.mapNotNull {
+                it.toOrder()
+            }
 
             orderRows.map { order ->
                 val products = OrderProducts.select { OrderProducts.orderId eq order.id!! }
