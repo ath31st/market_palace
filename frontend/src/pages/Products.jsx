@@ -11,6 +11,12 @@ const Products = () => {
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [search, setSearch] = useState('')
+  const [sortBy, setSortBy] = useState('default')
+  const sortOptions = [
+    { value: 'price', label: 'Price' },
+    { value: 'title', label: 'Title' },
+  ]
 
   useEffect(() => {
     const fetchProducts = async (page = 1, size = 10) => {
@@ -20,7 +26,12 @@ const Products = () => {
 
       try {
         const response = await axiosInstance.get('/api/v1/products', {
-          params: { page, size },
+          params: {
+            page,
+            size,
+            search: search || undefined,
+            sortBy: sortBy !== 'default' ? sortBy : undefined,
+          },
         })
         console.log(response.data)
         setProducts(response.data.items)
@@ -35,11 +46,15 @@ const Products = () => {
     }
 
     fetchProducts(currentPage)
-  }, [currentPage, apiUrl])
+  }, [currentPage, apiUrl, search, sortBy])
 
   return (
     <div className="products">
-      <SearchAndSort/>
+      <SearchAndSort
+        onSearch={setSearch}
+        onSort={setSortBy}
+        sortOptions={sortOptions}
+      />
       {loading ? <p>Loading...</p> : error ? <p>Error: {error.message}</p> :
         <>
           <ProductList products={products}/>
