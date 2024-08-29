@@ -1,6 +1,8 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import SearchAndSort from '../components/container/SearchAndSort'
+import axios from '../config/axiosConfig'
+import { useNavigate } from 'react-router-dom'
 
 const OrdersContainer = styled.div`
     padding: 20px;
@@ -49,6 +51,7 @@ const ProductPhoto = styled.img`
     height: 80px;
     object-fit: cover;
     border: 1px solid #ddd;
+    cursor: pointer;
 `
 
 const OrderStatus = styled.div`
@@ -65,62 +68,62 @@ const OrderCost = styled.div`
 `
 
 const MyOrdersPage = () => {
-  const orders = [
-    {
-      id: 'Order123',
-      date: '2024-08-21',
-      deliveryAddress: '123 Street, City',
-      deliveryDate: '2024-08-25',
-      status: 'Delivered',
-      cost: '$150',
-      products: [
-        'path/to/product1.jpg',
-        'path/to/product2.jpg',
-        'path/to/product3.jpg',
-      ],
-    },
-    {
-      id: 'Order234',
-      date: '2024-08-13',
-      deliveryAddress: '123 Street, City',
-      deliveryDate: '2024-08-26',
-      status: 'Delivered',
-      cost: '$550',
-      products: [
-        'path/to/product4.jpg',
-        'path/to/product5.jpg',
-        'path/to/product6.jpg',
-      ],
-    },
-  ]
+  const [orders, setOrders] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const response = await axios.get('/api/v1/my-orders')
+        setOrders(response.data)
+        setLoading(false)
+      } catch (error) {
+        setError(error)
+      }
+    }
+
+    fetchOrders()
+  }, [])
+
+  const handleProductClick = (id) => {
+    navigate(`/products/${id}`)
+  }
 
   return (
     <OrdersContainer>
       <SearchAndSort/>
-      <OrderList>
-        {orders.map((order) => (
-          <OrderItem key={order.id}>
-            <OrderDetails>
-              <OrderID>Order ID: {order.id}</OrderID>
-              <OrderDate>Order date: {order.date}</OrderDate>
-              <DeliveryDetails>
-                Delivery address: {order.deliveryAddress}
-                <br/>
-                Delivery date: {order.deliveryDate}
-              </DeliveryDetails>
-            </OrderDetails>
-            <ProductPhotos>
-              {order.products.map((photo, index) => (
-                <ProductPhoto key={index} src={photo} alt="product"/>
-              ))}
-            </ProductPhotos>
-            <OrderStatus>
-              <p>Order status: {order.status}</p>
-              <OrderCost>Order cost: {order.cost}</OrderCost>
-            </OrderStatus>
-          </OrderItem>
-        ))}
-      </OrderList>
+      {loading ? <p>Loading...</p> : error ? <p>Error: {error.message}</p> :
+        <>
+          <OrderList>
+            {orders.map((order) => (
+              <OrderItem key={order.id}>
+                <OrderDetails>
+                  <OrderID>Order ID: {order.id}</OrderID>
+                  <OrderDate>Order date: {order.orderDate}</OrderDate>
+                  <DeliveryDetails>
+                    Delivery address: {order.deliveryAddress}
+                    <br/>
+                    Delivery date: {order.deliveryDate}
+                  </DeliveryDetails>
+                </OrderDetails>
+                <ProductPhotos>
+                  {order.products.map((item, index) => (
+                    <ProductPhoto
+                      onClick={() => handleProductClick(item.id)}
+                      key={index} src={item.imageLink}
+                      alt="product"/>
+                  ))}
+                </ProductPhotos>
+                <OrderStatus>
+                  <p>Order status: {order.orderStatus}</p>
+                  <OrderCost>Order cost: {order.orderCost}$</OrderCost>
+                </OrderStatus>
+              </OrderItem>
+            ))}
+          </OrderList>
+        </>}
     </OrdersContainer>
   )
 }
