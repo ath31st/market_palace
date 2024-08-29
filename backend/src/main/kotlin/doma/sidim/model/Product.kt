@@ -1,5 +1,7 @@
 package doma.sidim.model
 
+import doma.sidim.dto.ProductInCartDto
+import doma.sidim.dto.ProductInOrderDto
 import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.sql.Table
 
@@ -12,6 +14,29 @@ data class Product(
     val imageLink: String,
     val price: Long,
 )
+
+fun Product.toProductInOrderDto(quantity: Int) = ProductInOrderDto(
+    this.id!!,
+    quantity,
+    this.imageLink,
+    this.price,
+)
+
+fun Product.toProductInCartDto(quantity: Int): ProductInCartDto {
+    val smallDescription = if (this.description.length > 100) {
+        this.description.substring(0, 100) + "..."
+    } else {
+        this.description
+    }
+    return ProductInCartDto(
+        this.id!!,
+        this.title,
+        quantity,
+        smallDescription,
+        this.imageLink,
+        this.price,
+    )
+}
 
 object Products : Table("products") {
     val id = long("id").autoIncrement()
