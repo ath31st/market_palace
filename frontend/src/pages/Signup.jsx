@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { useForm } from 'react-hook-form'
 import axios from 'axios'
 import InputField from '../components/input/InputField'
 import SubmitButton from '../components/button/SubmitButton'
@@ -9,95 +10,94 @@ import SignInUpContainer from '../components/container/SignInUpContainer'
 import LabelWithLink from '../components/label/LabelWithLink'
 
 const Signup = () => {
-  const [formData, setFormData] = useState({
-    firstname: '',
-    lastname: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
+  const apiUrl = process.env.REACT_APP_API_BASE_URL
+
+  const axiosInstance = axios.create({
+    baseURL: apiUrl,
   })
 
-  const [error, setError] = useState('')
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    watch,
+  } = useForm()
+
+  const [error, setError] = useState(null)
   const navigate = useNavigate()
+  const password = watch('password')
 
-  const handleChange = (e) => {
-    const { name, value } = e.target
-    setFormData({
-      ...formData,
-      [name]: value,
-    })
-  }
-
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    if (
-      formData.password === '' ||
-      formData.email === '' ||
-      formData.firstname === '' ||
-      formData.lastname === ''
-    ) {
-      setError('Registration data cannot be empty')
-    } else if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match')
-    } else {
-      setError('')
-      try {
-        await axios.post(`/api/v1/signup`, formData)
-        navigate('/login')
-      } catch (error) {
-        console.error('Error during registration:', error)
-        if (error.response && error.response.data) {
-          setError(`Registration failed with cause: ${error.response.data}.`)
-        } else {
-          setError(`Registration failed. Please try again.`)
-        }
-      }
+  const onSubmit = async (data) => {
+    console.log(data)
+    try {
+      await axiosInstance.post(`/api/v1/signup`, data)
+      navigate('/login')
+    } catch (error) {
+      console.error('Error during registration:', error)
+      setError(`Registration failed. Please try again.`)
     }
   }
 
   return (
     <SignInUpContainer>
-      <SignInUpForm onSubmit={handleSubmit}>
+      <SignInUpForm onSubmit={handleSubmit(onSubmit)}>
         <h2>Signup</h2>
         <InputField
           type="text"
-          name="firstname"
           placeholder="First name"
-          value={formData.firstname}
-          onChange={handleChange}
+          {...register('firstname', { required: 'First name is required' })}
         />
+        {errors.firstname &&
+          <ErrorMessage>{errors.firstname.message}</ErrorMessage>}
+
         <InputField
           type="text"
-          name="lastname"
           placeholder="Last name"
-          value={formData.lastname}
-          onChange={handleChange}
+          {...register('lastname', { required: 'Last name is required' })}
         />
+        {errors.lastname &&
+          <ErrorMessage>{errors.lastname.message}</ErrorMessage>}
+
         <InputField
           type="email"
-          name="email"
           placeholder="Email"
-          value={formData.email}
-          onChange={handleChange}
+          {...register('email', {
+            required: 'Email is required',
+            pattern: {
+              value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
+              message: 'Invalid email address format',
+            },
+          })}
         />
+        {errors.email && <ErrorMessage>{errors.email.message}</ErrorMessage>}
+
         <InputField
           type="password"
-          name="password"
           placeholder="Password"
-          value={formData.password}
-          onChange={handleChange}
+          {...register('password', {
+            required: 'Password is required',
+            minLength: {
+              value: 3,
+              message: 'Password must be at least 3 characters',
+            },
+          })}
         />
+        {errors.password &&
+          <ErrorMessage>{errors.password.message}</ErrorMessage>}
+
         <InputField
           type="password"
-          name="confirmPassword"
           placeholder="Confirm Password"
-          value={formData.confirmPassword}
-          onChange={handleChange}
+          {...register('confirmPassword', {
+            required: 'Confirm Password is required',
+            validate: (value) =>
+              value === password || 'Passwords do not match',
+          })}
         />
+        {errors.confirmPassword &&
+          <ErrorMessage>{errors.confirmPassword.message}</ErrorMessage>}
         {error && <ErrorMessage>{error}</ErrorMessage>}
-        <SubmitButton type="submit" onClick={handleSubmit}>
-          Sign Up
-        </SubmitButton>
+        <SubmitButton type="submit">Sign Up</SubmitButton>
         <LabelWithLink>
           Already have an account? <Link to="/login">Sign in</Link>
         </LabelWithLink>
