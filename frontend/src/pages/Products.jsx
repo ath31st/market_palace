@@ -54,6 +54,7 @@ const Products = () => {
         onSearch={setSearch}
         onSort={setSortBy}
         sortOptions={sortOptions}
+        searchPlaceholder={'Search products'}
       />
       {loading ? <p>Loading...</p> : error ? <p>Error: {error.message}</p> :
         <>
