@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import SearchAndSort from '../components/container/SearchAndSort'
 import axios from '../config/axiosConfig'
+import EmptyOrderList from '../components/EmptyOrderList'
 import { useNavigate } from 'react-router-dom'
 
 const OrdersContainer = styled.div`
@@ -80,12 +81,13 @@ const MyOrdersPage = () => {
   const [search, setSearch] = useState('')
   const [sortBy, setSortBy] = useState('default')
   const sortOptions = [
-    { value: 'price', label: 'Price' },
+    { value: 'cost', label: 'Cost' },
     { value: 'date', label: 'Date' },
   ]
 
   useEffect(() => {
     const fetchOrders = async () => {
+      setLoading(true)
       try {
         const response = await axios.get('/api/v1/my-orders', {
           params: {
@@ -94,9 +96,10 @@ const MyOrdersPage = () => {
           },
         })
         setOrders(response.data)
-        setLoading(false)
       } catch (error) {
         setError(error)
+      } finally {
+        setLoading(false)
       }
     }
 
@@ -113,39 +116,43 @@ const MyOrdersPage = () => {
         onSort={setSortBy}
         onSearch={setSearch}
         sortOptions={sortOptions}
-        searchPlaceholder={'Search orders'}
+        searchPlaceholder={'Search orders by id'}
       />
       {loading ? <p>Loading...</p> : error ? <p>Error: {error.message}</p> :
         <>
-          <OrderList>
-            {orders.map((order) => (
-              <OrderItem key={order.id}>
-                <OrderDetails>
-                  <OrderID>Order ID: {order.id}</OrderID>
-                  <OrderDate>Order date:
-                    {formatDate(order.orderDate)}
-                  </OrderDate>
-                  <DeliveryDetails>
-                    Delivery address: {order.deliveryAddress}
-                    <br/>
-                    Delivery date: {formatDate(order.deliveryDate)}
-                  </DeliveryDetails>
-                </OrderDetails>
-                <ProductPhotos>
-                  {order.products.map((item, index) => (
-                    <ProductPhoto
-                      onClick={() => handleProductClick(item.id)}
-                      key={index} src={item.imageLink}
-                      alt="product"/>
-                  ))}
-                </ProductPhotos>
-                <OrderStatus>
-                  <p>Order status: {order.orderStatus}</p>
-                  <OrderCost>Order cost: {order.orderCost}$</OrderCost>
-                </OrderStatus>
-              </OrderItem>
-            ))}
-          </OrderList>
+          {orders.length === 0 ? (
+            <EmptyOrderList/>
+          ) : (
+            <OrderList>
+              {orders.map((order) => (
+                <OrderItem key={order.id}>
+                  <OrderDetails>
+                    <OrderID>Order ID: {order.id}</OrderID>
+                    <OrderDate>Order date:
+                      {formatDate(order.orderDate)}
+                    </OrderDate>
+                    <DeliveryDetails>
+                      Delivery address: {order.deliveryAddress}
+                      <br/>
+                      Delivery date: {formatDate(order.deliveryDate)}
+                    </DeliveryDetails>
+                  </OrderDetails>
+                  <ProductPhotos>
+                    {order.products.map((item, index) => (
+                      <ProductPhoto
+                        onClick={() => handleProductClick(item.id)}
+                        key={index} src={item.imageLink}
+                        alt="product"/>
+                    ))}
+                  </ProductPhotos>
+                  <OrderStatus>
+                    <p>Order status: {order.orderStatus}</p>
+                    <OrderCost>Order cost: {order.orderCost}$</OrderCost>
+                  </OrderStatus>
+                </OrderItem>
+              ))}
+            </OrderList>
+          )}
         </>}
     </OrdersContainer>
   )
