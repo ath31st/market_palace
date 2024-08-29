@@ -67,6 +67,11 @@ const OrderCost = styled.div`
     color: green;
 `
 
+const formatDate = (dateString) => {
+  const options = { year: 'numeric', month: 'long', day: 'numeric' }
+  return new Date(dateString).toLocaleDateString('en-EN', options)
+}
+
 const MyOrdersPage = () => {
   const [orders, setOrders] = useState([])
   const [loading, setLoading] = useState(true)
@@ -101,11 +106,13 @@ const MyOrdersPage = () => {
               <OrderItem key={order.id}>
                 <OrderDetails>
                   <OrderID>Order ID: {order.id}</OrderID>
-                  <OrderDate>Order date: {order.orderDate}</OrderDate>
+                  <OrderDate>Order date:
+                    {formatDate(order.orderDate)}
+                  </OrderDate>
                   <DeliveryDetails>
                     Delivery address: {order.deliveryAddress}
                     <br/>
-                    Delivery date: {order.deliveryDate}
+                    Delivery date: {formatDate(order.deliveryDate)}
                   </DeliveryDetails>
                 </OrderDetails>
                 <ProductPhotos>
