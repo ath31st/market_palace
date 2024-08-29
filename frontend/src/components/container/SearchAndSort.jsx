@@ -40,7 +40,12 @@ const SortSelect = styled.select`
     color: #555;
 `
 
-const SearchAndSort = ({ onSearch, onSort, sortOptions }) => {
+const SearchAndSort = ({
+  onSearch,
+  onSort,
+  sortOptions,
+  searchPlaceholder,
+}) => {
   const [searchTerm, setSearchTerm] = useState('')
   const [sortBy, setSortBy] = useState('default')
 
@@ -59,7 +64,7 @@ const SearchAndSort = ({ onSearch, onSort, sortOptions }) => {
       <SearchBar>
         <SearchInput
           type="text"
-          placeholder="Search products"
+          placeholder={searchPlaceholder}
           value={searchTerm}
           onChange={handleSearchChange}
         />
