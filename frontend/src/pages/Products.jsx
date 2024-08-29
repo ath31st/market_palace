@@ -1,12 +1,10 @@
 import { useEffect, useState } from 'react'
-import useAuth from '../hooks/useAuth'
 import axios from 'axios'
 import SearchAndSort from '../components/container/SearchAndSort'
 import ProductList from '../components/ProductList'
 import Pagination from '../components/Pagination'
 
 const Products = () => {
-  const isAuthenticated = useAuth().isAuthenticated
   const apiUrl = process.env.REACT_APP_API_BASE_URL
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
